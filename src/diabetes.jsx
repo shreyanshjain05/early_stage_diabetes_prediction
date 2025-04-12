@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import Navbar2 from './components/navbar2';
 
@@ -7,20 +7,25 @@ function Diabetes() {
   const [prediction, setPrediction] = useState('');
 
   const fields = [
-    { name: 'Age', description: 'Enter your age' },
-    { name: 'Pregnancies', description: 'Enter the number of pregnancies (optional)' },
-    { name: 'Glucose Levels', description: 'Enter your glucose level (mg/dL)' },
-    { name: 'Blood Pressure', description: 'Enter your blood pressure (mmHg)' },
-    { name: 'Skin Thickness', description: 'Enter your skin thickness (mm)' },
-    { name: 'Insulin Levels', description: 'Enter your insulin level (IU/mL)' },
-    { name: 'Body Mass Index (BMI)', description: 'Enter your BMI (kg/m²)' },
-    { name: 'Diabetes Pedigree Function', description: 'Enter the diabetes pedigree function' },
-    
-    { name: 'Family History', description: 'Indicate if there’s a family history of diabetes (Yes/No)' },
-    { name: 'Physical Activity Levels', description: 'Rate your physical activity level (1-10)' },
-    { name: 'Diet Quality', description: 'Rate the quality of your diet (1-10)' },
-    { name: 'Sleep Duration', description: 'Enter average sleep duration (hours)' },
-    { name: 'Smoking Status', description: 'Indicate if you smoke (Yes/No)' },
+    { name: 'Age', description: 'Enter your age', type: 'text' },
+    { name: 'Pregnancies', description: 'Enter the number of pregnancies (optional)', type: 'text' },
+    { name: 'Glucose Levels', description: 'Enter your glucose level (mg/dL)', type: 'text' },
+    { name: 'Blood Pressure', description: 'Enter your blood pressure (mmHg)', type: 'text' },
+    { name: 'Skin Thickness', description: 'Enter your skin thickness (mm)', type: 'text' },
+    { name: 'Insulin Levels', description: 'Enter your insulin level (IU/mL)', type: 'text' },
+    { name: 'Body Mass Index (BMI)', description: 'Enter your BMI (kg/m²)', type: 'text' },
+    { name: 'Diabetes Pedigree Function', description: 'Enter the diabetes pedigree function', type: 'text' },
+    { name: 'Family History', description: 'Is there a family history of diabetes?', type: 'select', options: [
+      { value: '1', label: 'Yes' },
+      { value: '0', label: 'No' }
+    ]},
+    { name: 'Physical Activity Levels', description: 'Rate your physical activity level (1-10)', type: 'text' },
+    { name: 'Diet Quality', description: 'Rate the quality of your diet (1-10)', type: 'text' },
+    { name: 'Sleep Duration', description: 'Enter average sleep duration (hours)', type: 'text' },
+    { name: 'Smoking Status', description: 'Do you smoke?', type: 'select', options: [
+      { value: '1', label: 'Yes' },
+      { value: '0', label: 'No' }
+    ]},
   ];
 
   const handleChange = (e) => {
@@ -43,6 +48,41 @@ function Diabetes() {
       });
   };
 
+  const renderFormField = (field) => {
+    if (field.type === 'select') {
+      return (
+        <select
+          id={field.name}
+          name={field.name}
+          value={formData[field.name] || ''}
+          onChange={handleChange}
+          required={field.name !== 'Pregnancies'}
+          className="input"
+        >
+          <option value="" disabled>Select an option</option>
+          {field.options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      );
+    }
+    
+    return (
+      <input
+        id={field.name}
+        type="text"
+        name={field.name}
+        placeholder={field.description}
+        value={formData[field.name] || ''}
+        onChange={handleChange}
+        required={field.name !== 'Pregnancies'}
+        className="input"
+      />
+    );
+  };
+
   return (
     <>
       <Navbar2 />
@@ -54,16 +94,7 @@ function Diabetes() {
               <label htmlFor={field.name} className="label">
                 {field.name}
               </label>
-              <input
-                id={field.name}
-                type="text"
-                name={field.name}
-                placeholder={field.description}
-                value={formData[field.name] || ''}
-                onChange={handleChange}
-                required={field.name !== 'Pregnancies'}
-                className="input"
-              />
+              {renderFormField(field)}
             </div>
           ))}
           <button type="submit" className="button">
@@ -78,7 +109,7 @@ function Diabetes() {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         /* Gradient Background and Navbar Styling */
         .page-container {
           background: linear-gradient(135deg, #ffa726, #ff7043); /* Orange gradient */
@@ -134,7 +165,7 @@ function Diabetes() {
           font-family: 'Arima', sans-serif;
         }
 
-        .input {
+        .input, select {
           padding: 0.8rem;
           width: 100%;
           font-size: 1rem;
@@ -144,9 +175,10 @@ function Diabetes() {
           outline: none;
           transition: border-color 0.3s;
           font-family: 'Arima', sans-serif;
+          background-color: white;
         }
 
-        .input:focus {
+        .input:focus, select:focus {
           border-color: #ff7043;
         }
 
@@ -185,7 +217,8 @@ function Diabetes() {
             font-size: 1.8rem;
           }
           .label,
-          .input {
+          .input,
+          select {
             font-size: 0.9rem;
           }
           .button {
